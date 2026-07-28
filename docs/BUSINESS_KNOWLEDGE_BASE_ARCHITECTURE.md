@@ -89,6 +89,8 @@ The shell bootstrap may create only:
 - Packaging.
 - Approved database views.
 
+Live-deployment readiness is handled by `scripts/notion_live_bootstrap_readiness.py`. It is dry-run only, makes no live Notion reads or writes, and prints the exact proposed workspace tree, database properties, relationships, object action plan, and deployment-state expectations.
+
 Automation rules:
 
 - Dry-run is the default.
@@ -98,6 +100,8 @@ Automation rules:
 - Automation must stop on schema conflicts.
 - Automation must never delete or archive Notion content automatically.
 - Automation must never create operational records.
+
+Deployment state is stored locally in `.notion-state.json`, using `notion/deployment-state.example.json` as the committed shape reference. The state file retains generated Notion IDs for safe matching and resumability, and must not contain credentials.
 
 ## Future Schema Changes
 

@@ -30,6 +30,15 @@ python scripts/bootstrap_notion_phase2.py --inspect
 python scripts/bootstrap_notion_phase2.py --apply
 ```
 
+`notion_live_bootstrap_readiness.py` is a dry-run-only readiness command for the live deployment phase. It validates configuration and schema, prints the proposed workspace tree, database properties, relationships, object action plan, and deployment-state expectations. It does not instantiate a Notion client and performs no live reads or writes.
+
+Commands:
+
+```powershell
+python scripts/notion_live_bootstrap_readiness.py
+python scripts/notion_live_bootstrap_readiness.py --state-file .notion-state.json
+```
+
 Future scripts may include:
 
 - Schema validation.

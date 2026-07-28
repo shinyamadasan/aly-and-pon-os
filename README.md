@@ -111,6 +111,14 @@ python scripts/bootstrap_notion_phase2.py --apply
 
 The Business Knowledge Base shell command may create only approved Home, Brand, Brand child pages, and database views. Inspect reports approved database completion, each approved view target, layout, filters, sorts, visible property configuration, and the apply endpoint. Apply performs full preflight before writing and creates database views before pages. It does not create operational records or business facts.
 
+Live bootstrap readiness dry-run:
+
+```powershell
+python scripts/notion_live_bootstrap_readiness.py
+```
+
+This readiness command validates configuration and schema, prints the exact proposed workspace tree, database properties, relationships, planned object actions, and deployment-state expectations. It performs no live Notion reads or writes. See `docs/NOTION_LIVE_BOOTSTRAP_READINESS.md`.
+
 ## Out of Scope
 
 - Product application code.

@@ -8,6 +8,9 @@ The format follows a simple date-based log. This repository is currently pre-rel
 
 ### Added
 
+- Added live-bootstrap readiness dry-run preparation for the Business Knowledge Base.
+- Added deployment-state shape documentation for later authorized Notion deployment.
+- Added live bootstrap readiness documentation.
 - Added the approved Aly & Pon Business Knowledge Base v1 specification.
 - Added Aly & Pon Operating Principles as the architecture guardrail for Notion, the Product Lab App, and Git.
 - Added the Business Knowledge Base architecture entry-point document and v1.0 implementation milestone.
