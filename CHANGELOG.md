@@ -18,6 +18,9 @@ The format follows a simple date-based log. This repository is currently pre-rel
 - Added mocked tests for dry-run, environment validation, existing-page detection, page creation, API failures, and secret redaction.
 - Added the minimum Notion Python client dependency declaration.
 - Added `python-dotenv` so the connectivity test can load local `.env` values without exposing secrets.
+- Added a dry-run-first Phase 1 Notion database builder for Areas, Tasks, Decisions, Meetings, and Approvals.
+- Added mocked tests for Phase 1 builder schema validation, idempotency, conflicts, creation, and relation safety.
+- Added read-only `--inspect` mode for Phase 1 Notion planning.
 
 ### Changed
 
@@ -28,3 +31,7 @@ The format follows a simple date-based log. This repository is currently pre-rel
 - Added Notion safety rules to `AGENTS.md` and the workspace schema.
 - Documented Notion connectivity setup, test, dry-run, and apply commands in `README.md`.
 - Documented `.env` loading behavior for the Notion connectivity test.
+- Documented Phase 1 Notion builder commands and safety behavior.
+- Updated the Phase 1 builder for Notion API `2025-09-03` data source behavior.
+- Improved Phase 1 builder summaries and sanitized Notion API error reporting.
+- Corrected Phase 1 relation repair payloads to use one-way `single_property` relations targeting data source IDs.

@@ -63,3 +63,5 @@ SOPs, Projects, Assets, Vendors, and Brand Standards remain important future mod
 Future automation must default to dry-run behavior. Live writes require an explicit `--apply` flag, must be idempotent, must never expose secrets, and must stop on unexpected live-schema conflicts. No automation may delete or archive Notion content automatically.
 
 The current Notion automation scope is limited to a connectivity test. It may only verify access to the configured parent page and, in explicit apply mode, idempotently create one direct child page named `Aly & Pon Connection Test`.
+
+The Phase 1 database builder is also approved as a guarded command. In dry-run it validates the environment and schema without contacting Notion. In inspect mode it reads live Notion state but performs no writes. In explicit apply mode it may create only the five approved Phase 1 databases under the configured parent page or repair missing approved one-way relation properties. It must inspect all five databases before any write and stop before writing if an existing same-title database has a hard schema conflict.

@@ -22,6 +22,47 @@ Notion is the planned business brain for Aly & Pon. This document defines the ar
 | Meetings | Meeting records, notes, and resulting tasks or decisions. |
 | Approvals | Human review records for tasks and decisions requiring approval. |
 
+## Phase 1 Builder
+
+`scripts/build_notion_phase1.py` builds only the five approved Phase 1 databases from `notion/workspace-schema.json`. Dry-run is the default.
+
+The builder targets Notion API version `2025-09-03`. In that version, a database is a container and schema properties belong to the database's primary data source. The installed Python client does not expose a dedicated `data_sources` endpoint helper, so the builder uses the client's generic request method for `/v1/data_sources` reads and updates.
+
+Apply mode may only:
+
+- Verify access to the configured parent page.
+- Inspect direct child databases.
+- Match existing databases by exact title.
+- Resolve each database container ID and primary data source ID.
+- Retrieve schemas from primary data sources.
+- Create missing approved Phase 1 databases.
+- Add only missing relation properties explicitly defined in `workspace-schema.json`.
+- Build one-way relation properties with the related data source ID and `single_property`.
+- Skip existing databases whose schemas match.
+- Stop safely on same-title schema conflicts.
+
+The builder must not create SOPs, Projects, Assets, Vendors, Brand Standards, or any other future-module database.
+
+Missing approved relation properties are treated as resumable incomplete state. Wrong property types, wrong relation targets, incompatible select options, missing non-relation properties, and unexpected properties are hard conflicts.
+
+Relation repair updates are sent to `PATCH /v1/data_sources/{data_source_id}` with this property shape:
+
+```json
+{
+  "properties": {
+    "Area": {
+      "type": "relation",
+      "relation": {
+        "data_source_id": "<target data source id>",
+        "single_property": {}
+      }
+    }
+  }
+}
+```
+
+The builder does not add `dual_property` unless it is explicitly defined in `notion/workspace-schema.json`, and it does not invent reciprocal relation properties.
+
 ## Relationships
 
 - A Task may relate to one Area.
