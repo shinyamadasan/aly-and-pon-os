@@ -61,3 +61,5 @@ SOPs, Projects, Assets, Vendors, and Brand Standards remain important future mod
 ## Automation Safety
 
 Future automation must default to dry-run behavior. Live writes require an explicit `--apply` flag, must be idempotent, must never expose secrets, and must stop on unexpected live-schema conflicts. No automation may delete or archive Notion content automatically.
+
+The current Notion automation scope is limited to a connectivity test. It may only verify access to the configured parent page and, in explicit apply mode, idempotently create one direct child page named `Aly & Pon Connection Test`.

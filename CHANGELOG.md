@@ -14,6 +14,10 @@ The format follows a simple date-based log. This repository is currently pre-rel
 - Added reusable documentation templates under `templates/`.
 - Added placeholders for future scripts and tests.
 - Added AI agent operating instructions in `AGENTS.md`.
+- Added a safe, idempotent Notion connectivity test script with dry-run default behavior.
+- Added mocked tests for dry-run, environment validation, existing-page detection, page creation, API failures, and secret redaction.
+- Added the minimum Notion Python client dependency declaration.
+- Added `python-dotenv` so the connectivity test can load local `.env` values without exposing secrets.
 
 ### Changed
 
@@ -22,3 +26,5 @@ The format follows a simple date-based log. This repository is currently pre-rel
 - Moved SOPs, Projects, Assets, Vendors, and Brand Standards into future-module planning.
 - Updated Notion architecture and operating model documentation to match the Phase 1 schema.
 - Added Notion safety rules to `AGENTS.md` and the workspace schema.
+- Documented Notion connectivity setup, test, dry-run, and apply commands in `README.md`.
+- Documented `.env` loading behavior for the Notion connectivity test.

@@ -1,8 +1,10 @@
 # Tests
 
-This folder is reserved for future validation tests.
+This folder stores validation tests.
 
-No test runner or dependencies are installed yet. Future tests should verify:
+Current tests use Python `unittest`, mock Notion API behavior, and verify `.env` loading with temporary files. They do not require live Notion access.
+
+Future tests should verify:
 
 - JSON schema validity.
 - Required documentation files.

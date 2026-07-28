@@ -58,7 +58,9 @@ These modules are intentionally excluded from the Phase 1 workspace schema. They
 
 ## Integration Status
 
-No Notion API code exists yet. Future integration should begin only after:
+The repository includes a minimal Notion connectivity test. It does not create databases, modify the parent page, delete content, archive content, or write local state. Dry-run is the default.
+
+Future database integration should begin only after:
 
 - The workspace schema is reviewed.
 - Required Notion permissions are documented.

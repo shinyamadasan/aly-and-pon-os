@@ -38,13 +38,42 @@ The current repository foundation focuses on:
 - A versioned Notion workspace schema draft.
 - Templates for repeatable business documentation.
 
+## Notion Connectivity Test
+
+Human approval is required before running any write-capable Notion command. Dry-run is the default and does not perform live Notion writes.
+
+Setup:
+
+```powershell
+python -m pip install -r requirements.txt
+```
+
+Test:
+
+```powershell
+python -m unittest discover -s tests
+```
+
+Dry-run:
+
+```powershell
+python scripts/notion_connection_test.py
+```
+
+Apply:
+
+```powershell
+python scripts/notion_connection_test.py --apply
+```
+
+The script loads local `.env` values with `python-dotenv`, then reads `NOTION_TOKEN` and `NOTION_PARENT_PAGE_ID` from the process environment. Existing process environment variables are not overwritten by default. It never prints the token. In apply mode it only verifies parent-page access and idempotently creates a direct child page named `Aly & Pon Connection Test` if that page does not already exist.
+
 ## Out of Scope
 
 - Product application code.
 - Inventory management.
 - Recipe databases.
-- Notion API integration.
-- Dependency installation.
+- Phase 1 Notion database creation.
 - GitHub workflow changes.
 
 ## Working Agreement
