@@ -1,0 +1,36 @@
+{
+  "schemaVersion": "1.0.0",
+  "workspace": {
+    "name": "Aly & Pon",
+    "parentPageId": "<notion-parent-page-id>"
+  },
+  "pages": {
+    "Home": { "id": "<notion-page-id>" },
+    "Brand": { "id": "<notion-page-id>" },
+    "Brand/Brand Bible": { "id": "<notion-page-id>" },
+    "Brand/Inspiration": { "id": "<notion-page-id>" },
+    "Brand/Visual Identity": { "id": "<notion-page-id>" },
+    "Brand/Packaging": { "id": "<notion-page-id>" },
+    "Aly & Pon Operating Principles": { "id": "<notion-page-id>" }
+  },
+  "databases": {
+    "Product Catalog": {
+      "databaseId": "<notion-database-container-id>",
+      "dataSourceId": "<notion-data-source-id>"
+    },
+    "Content Library": {
+      "databaseId": "<notion-database-container-id>",
+      "dataSourceId": "<notion-data-source-id>"
+    },
+    "Decision Log": {
+      "databaseId": "<notion-database-container-id>",
+      "dataSourceId": "<notion-data-source-id>"
+    }
+  },
+  "views": {
+    "Product Catalog/Catalog": { "id": "<notion-view-id>" },
+    "Content Library/Content Pipeline": { "id": "<notion-view-id>" },
+    "Decision Log/Decision Log": { "id": "<notion-view-id>" }
+  }
+}
+
