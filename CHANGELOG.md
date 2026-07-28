@@ -8,6 +8,9 @@ The format follows a simple date-based log. This repository is currently pre-rel
 
 ### Added
 
+- Added the approved Aly & Pon Business Knowledge Base v1 specification.
+- Added Aly & Pon Operating Principles as the architecture guardrail for Notion, the Product Lab App, and Git.
+- Added the Business Knowledge Base architecture entry-point document and v1.0 implementation milestone.
 - Created the initial repository foundation for Aly & Pon OS.
 - Added core business architecture documentation under `docs/`.
 - Added Notion workspace planning files under `notion/`.
@@ -26,6 +29,8 @@ The format follows a simple date-based log. This repository is currently pre-rel
 
 ### Changed
 
+- Replaced the operations-heavy Notion workspace schema with the approved Product Catalog, Content Library, and Decision Log model.
+- Updated Notion and operating model documentation to enforce the principle that Notion stores business knowledge, not operations.
 - Expanded `README.md` from a short description into a repository guide.
 - Narrowed the Phase 1 Notion schema to Areas, Tasks, Decisions, Meetings, and Approvals.
 - Moved SOPs, Projects, Assets, Vendors, and Brand Standards into future-module planning.

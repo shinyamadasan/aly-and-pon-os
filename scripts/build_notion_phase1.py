@@ -1,4 +1,4 @@
-"""Build or repair the approved Phase 1 Notion databases for Aly & Pon OS."""
+"""Build or repair the approved Aly & Pon Business Knowledge Base databases."""
 
 from __future__ import annotations
 
@@ -15,8 +15,8 @@ from dotenv import load_dotenv
 
 
 NOTION_API_VERSION = "2025-09-03"
-APPROVED_DATABASES = ["Areas", "Tasks", "Decisions", "Meetings", "Approvals"]
-SUPPORTED_PROPERTY_TYPES = {"title", "select", "people", "rich_text", "date", "relation", "checkbox"}
+APPROVED_DATABASES = ["Product Catalog", "Content Library", "Decision Log"]
+SUPPORTED_PROPERTY_TYPES = {"title", "select", "rich_text", "date", "relation", "checkbox", "files"}
 REQUIRED_ENV_VARS = ("NOTION_TOKEN", "NOTION_PARENT_PAGE_ID")
 PAGE_ID_RE = re.compile(
     r"^(?:[0-9a-fA-F]{32}|[0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{12})$"
@@ -125,12 +125,12 @@ def validate_workspace_schema(schema: dict[str, Any]) -> list[str]:
         return ["workspace-schema.json must contain a databases list."]
     active_names = [database.get("name") for database in databases]
     if active_names != APPROVED_DATABASES:
-        errors.append("Active Phase 1 databases must be exactly, in order: " + ", ".join(APPROVED_DATABASES) + ".")
+        errors.append("Active Business Knowledge Base databases must be exactly, in order: " + ", ".join(APPROVED_DATABASES) + ".")
     approved_set = set(APPROVED_DATABASES)
     for database in databases:
         name = database.get("name", "<unnamed>")
         if name not in approved_set:
-            errors.append(f"Unexpected active database is not approved for Phase 1: {name}")
+            errors.append(f"Unexpected active database is not approved for the Business Knowledge Base: {name}")
         properties = database.get("properties")
         if not isinstance(properties, list):
             errors.append(f"{name} must define a properties list.")
@@ -165,7 +165,7 @@ def notion_property_payload(
     prop_type = prop["type"]
     if prop_type == "title":
         return {"title": {}}
-    if prop_type in {"rich_text", "people", "date", "checkbox"}:
+    if prop_type in {"rich_text", "date", "checkbox", "files"}:
         return {prop_type: {}}
     if prop_type == "select":
         return {"select": {"options": [{"name": option} for option in select_options(prop, schema)]}}
@@ -497,7 +497,7 @@ def run_build(
     result.messages.append("Required environment variables are present.")
     result.messages.append("NOTION_PARENT_PAGE_ID format is valid.")
     result.messages.append(f"NOTION_TOKEN: {redact_secret(token)}")
-    result.messages.append("workspace-schema.json is valid for Phase 1.")
+    result.messages.append("workspace-schema.json is valid for Aly & Pon Business Knowledge Base v1.")
     result.messages.append("Creation order: " + ", ".join(APPROVED_DATABASES))
     for database in schema["databases"]:
         result.messages.append(f"{database['name']} properties:")
@@ -511,7 +511,7 @@ def run_build(
 
     if not apply and not inspect:
         result.messages.append("Dry-run mode: no live Notion reads or writes will be performed.")
-        result.messages.append("Inspect mode would verify parent-page access and classify the five approved databases without writing.")
+        result.messages.append("Inspect mode would verify parent-page access and classify the three approved databases without writing.")
         result.messages.append("Apply mode would inspect first, stop on hard conflicts, and then create only missing containers or missing approved relations.")
         return result
 
@@ -528,7 +528,7 @@ def run_build(
     except Exception as exc:
         result.exit_code = 1
         result.failed.append("Notion API")
-        result.messages.append(api_error_message(exc, "Phase 1 workspace planning/apply"))
+        result.messages.append(api_error_message(exc, "Business Knowledge Base workspace planning/apply"))
         result.messages.extend(summary_messages(result))
         return result
 
@@ -547,7 +547,7 @@ def summary_messages(result: BuildResult) -> list[str]:
 
 
 def build_parser() -> argparse.ArgumentParser:
-    parser = argparse.ArgumentParser(description="Build or repair the approved Aly & Pon Phase 1 Notion databases.")
+    parser = argparse.ArgumentParser(description="Build or repair the approved Aly & Pon Business Knowledge Base databases.")
     parser.add_argument("--inspect", action="store_true", help="Read live Notion state and plan the repair without writes.")
     parser.add_argument("--apply", action="store_true", help="Create missing approved containers or repair missing approved relations.")
     return parser

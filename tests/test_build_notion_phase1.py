@@ -210,16 +210,17 @@ class BuildNotionPhase1Test(unittest.TestCase):
     def test_valid_schema_loads_successfully(self):
         result = run_build(VALID_ENV, apply=False, schema_path=self.schema_path(BASE_SCHEMA))
         self.assertEqual(result.exit_code, 0)
-        self.assertIn("workspace-schema.json is valid for Phase 1.", text(result))
+        self.assertIn("workspace-schema.json is valid for Aly & Pon Business Knowledge Base v1.", text(result))
 
-    def test_only_five_approved_databases_are_accepted(self):
+    def test_only_three_approved_databases_are_accepted(self):
         result = run_build(VALID_ENV, apply=False, schema_path=self.schema_path(BASE_SCHEMA))
         self.assertEqual(result.exit_code, 0)
         self.assertIn("Creation order: " + ", ".join(APPROVED_DATABASES), text(result))
+        self.assertEqual(APPROVED_DATABASES, ["Product Catalog", "Content Library", "Decision Log"])
 
     def test_unexpected_active_database_is_rejected(self):
         schema = deepcopy(BASE_SCHEMA)
-        schema["databases"].append({"name": "Vendors", "properties": [{"name": "Name", "type": "title"}]})
+        schema["databases"].append({"name": "Tasks", "properties": [{"name": "Name", "type": "title"}]})
         result = run_build(VALID_ENV, apply=False, schema_path=self.schema_path(schema))
         self.assertEqual(result.exit_code, 1)
         self.assertIn("Unexpected active database is not approved", text(result))
@@ -228,7 +229,7 @@ class BuildNotionPhase1Test(unittest.TestCase):
         client = FakeClient(self.existing(full=True))
         result = run_build(VALID_ENV, inspect=True, client=client, schema_path=self.schema_path(BASE_SCHEMA))
         self.assertEqual(result.exit_code, 0)
-        self.assertIn("data_source_id=sour...reas", text(result))
+        self.assertIn("data_source_id=sour...alog", text(result))
 
     def test_schema_retrieval_uses_data_source_endpoint(self):
         client = FakeClient(self.existing(full=True))
@@ -251,10 +252,10 @@ class BuildNotionPhase1Test(unittest.TestCase):
 
         self.assertEqual(result.exit_code, 0)
         first_patch = next(call for call in client.request_calls if call["method"] == "PATCH")
-        area_payload = first_patch["body"]["properties"]["Area"]
-        self.assertEqual(area_payload["type"], "relation")
-        self.assertEqual(area_payload["relation"]["data_source_id"], "source-Areas")
-        self.assertEqual(area_payload["relation"]["single_property"], {})
+        related_decisions_payload = first_patch["body"]["properties"]["Related Decisions"]
+        self.assertEqual(related_decisions_payload["type"], "relation")
+        self.assertEqual(related_decisions_payload["relation"]["data_source_id"], "source-Decision Log")
+        self.assertEqual(related_decisions_payload["relation"]["single_property"], {})
 
     def test_dual_property_is_not_added_implicitly(self):
         client = FakeClient(self.existing(full=False))
@@ -275,41 +276,41 @@ class BuildNotionPhase1Test(unittest.TestCase):
         client = FakeClient(self.existing(full=False))
         result = run_build(VALID_ENV, inspect=True, client=client, schema_path=self.schema_path(BASE_SCHEMA))
         self.assertEqual(result.exit_code, 0)
-        self.assertIn("incomplete: Tasks, Decisions, Meetings, Approvals", text(result))
+        self.assertIn("incomplete: Product Catalog, Content Library, Decision Log", text(result))
 
     def test_missing_approved_relations_are_resumable(self):
         client = FakeClient(self.existing(full=False))
         result = run_build(VALID_ENV, apply=True, client=client, schema_path=self.schema_path(BASE_SCHEMA))
         self.assertEqual(result.exit_code, 0)
-        self.assertIn("Tasks.Area", result.relations_added)
+        self.assertIn("Content Library.Related Product", result.relations_added)
         self.assertEqual(result.containers_created, [])
 
     def test_wrong_type_properties_remain_hard_conflicts(self):
         existing = self.existing(full=False)
-        existing["Areas"]["properties"]["Status"] = {"type": "rich_text", "rich_text": {}}
+        existing["Product Catalog"]["properties"]["Status"] = {"type": "rich_text", "rich_text": {}}
         client = FakeClient(existing)
         result = run_build(VALID_ENV, apply=True, client=client, schema_path=self.schema_path(BASE_SCHEMA))
         self.assertEqual(result.exit_code, 1)
-        self.assertEqual(result.conflicts, ["Areas"])
+        self.assertEqual(result.conflicts, ["Product Catalog"])
         self.assertEqual(client.write_calls(), [])
 
     def test_wrong_relation_target_remains_hard_conflict(self):
         existing = self.existing(full=True)
-        existing["Tasks"]["properties"]["Area"]["relation"]["data_source_id"] = "source-Meetings"
+        existing["Content Library"]["properties"]["Related Product"]["relation"]["data_source_id"] = "source-Decision Log"
         client = FakeClient(existing)
         result = run_build(VALID_ENV, apply=True, client=client, schema_path=self.schema_path(BASE_SCHEMA))
         self.assertEqual(result.exit_code, 1)
-        self.assertEqual(result.conflicts, ["Tasks"])
+        self.assertEqual(result.conflicts, ["Content Library"])
         self.assertEqual(client.write_calls(), [])
 
     def test_all_conflicts_are_detected_before_writes(self):
         existing = self.existing(full=True)
-        existing["Tasks"]["properties"]["Status"]["select"]["options"] = [{"name": "Wrong"}]
-        existing["Meetings"]["properties"]["Status"] = {"type": "date", "date": {}}
+        existing["Content Library"]["properties"]["Status"]["select"]["options"] = [{"name": "Wrong"}]
+        existing["Decision Log"]["properties"]["Status"] = {"type": "date", "date": {}}
         client = FakeClient(existing)
         result = run_build(VALID_ENV, apply=True, client=client, schema_path=self.schema_path(BASE_SCHEMA))
         self.assertEqual(result.exit_code, 1)
-        self.assertEqual(set(result.conflicts), {"Tasks", "Meetings"})
+        self.assertEqual(set(result.conflicts), {"Content Library", "Decision Log"})
         self.assertEqual(client.write_calls(), [])
 
     def test_no_new_containers_are_created_during_repair(self):
@@ -323,7 +324,7 @@ class BuildNotionPhase1Test(unittest.TestCase):
         client = FakeClient(self.existing(full=False))
         result = run_build(VALID_ENV, apply=True, client=client, schema_path=self.schema_path(BASE_SCHEMA))
         self.assertEqual(result.exit_code, 0)
-        self.assertEqual(len(result.relations_added), 9)
+        self.assertEqual(len(result.relations_added), 5)
         self.assertTrue(all(call["method"] == "PATCH" for call in client.write_calls()))
 
     def test_relation_update_targets_owning_data_source(self):
@@ -332,8 +333,8 @@ class BuildNotionPhase1Test(unittest.TestCase):
 
         self.assertEqual(result.exit_code, 0)
         patch_paths = [call["path"] for call in client.request_calls if call["method"] == "PATCH"]
-        self.assertIn("data_sources/source-Tasks", patch_paths)
-        self.assertIn("data_sources/source-Decisions", patch_paths)
+        self.assertIn("data_sources/source-Content Library", patch_paths)
+        self.assertIn("data_sources/source-Decision Log", patch_paths)
 
     def test_second_apply_performs_zero_writes(self):
         client = FakeClient(self.existing(full=False))
@@ -366,7 +367,7 @@ class BuildNotionPhase1Test(unittest.TestCase):
         result = run_build(VALID_ENV, apply=True, client=client, schema_path=self.schema_path(BASE_SCHEMA))
 
         self.assertEqual(result.exit_code, 1)
-        self.assertEqual(result.relations_added, ["Tasks.Area", "Tasks.Related Decision"])
+        self.assertEqual(result.relations_added, ["Product Catalog.Related Decisions"])
 
     def test_failed_relation_pass_is_not_reported_as_full_success(self):
         client = FakeClient(self.existing(full=False), fail_update=True)
@@ -398,7 +399,7 @@ class BuildNotionPhase1Test(unittest.TestCase):
 
     def test_relations_resolve_only_to_approved_databases(self):
         schema = deepcopy(BASE_SCHEMA)
-        schema["databases"][1]["properties"].append({"name": "Bad Relation", "type": "relation", "relatedDatabase": "Vendors"})
+        schema["databases"][1]["properties"].append({"name": "Bad Relation", "type": "relation", "relatedDatabase": "Tasks"})
         result = run_build(VALID_ENV, apply=False, schema_path=self.schema_path(schema))
         self.assertEqual(result.exit_code, 1)
         self.assertIn("relates to unapproved database", text(result))
