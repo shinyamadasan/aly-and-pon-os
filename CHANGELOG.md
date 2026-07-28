@@ -30,6 +30,15 @@ The format follows a simple date-based log. This repository is currently pre-rel
 - Added a guarded Phase 2 workspace bootstrap command for dashboard pages, views, template reference pages, and starter Areas.
 - Added mocked tests for Phase 2 dry-run, inspect, idempotency, allowed writes, and user-content preservation.
 
+### Deployed
+
+- Deployed the Aly & Pon Business Knowledge Base v1.0 to the live Notion workspace.
+- Created live Notion pages for Home, Brand, Brand Bible, Inspiration, Visual Identity, Packaging, and Aly & Pon Operating Principles.
+- Created live Notion databases for Product Catalog, Content Library, and Decision Log.
+- Added approved live Notion database relations and views.
+- Saved generated Notion object IDs to ignored local deployment state in `.notion-state.json`.
+- Verified the database and shell bootstrap commands are idempotent on a second live run.
+
 ### Changed
 
 - Replaced the operations-heavy Notion workspace schema with the approved Product Catalog, Content Library, and Decision Log model.
