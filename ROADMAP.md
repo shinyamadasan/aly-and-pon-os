@@ -8,7 +8,7 @@ Status: In progress
 
 - Establish repository standards.
 - Create core documentation.
-- Define the Phase 1 Notion workspace architecture around Areas, Tasks, Decisions, Meetings, and Approvals.
+- Define the approved Notion Business Knowledge Base architecture around Product Catalog, Content Library, and Decision Log.
 - Draft Google Drive mapping.
 - Add reusable documentation templates.
 - Add placeholders for scripts and tests.
@@ -17,10 +17,10 @@ Status: In progress
 
 Status: Not started
 
-- Refine Phase 1 Notion database definitions.
+- Refine Business Knowledge Base database definitions after use.
 - Define owners for each business knowledge area.
-- Create task, decision, meeting, approval, and area record formats.
-- Map each Phase 1 Notion database to source documents and Google Drive folders where relevant.
+- Create product, content, and decision record formats.
+- Map each Business Knowledge Base database to source documents and Google Drive folders where relevant.
 - Define review cadence for business records.
 
 ## Future Modules
@@ -32,7 +32,7 @@ These ideas are intentionally excluded from the Phase 1 workspace schema, but th
 | Module | Future Purpose |
 | --- | --- |
 | SOPs | Standard operating procedures and review history. |
-| Projects | Strategic and operational initiatives beyond simple task tracking. |
+| Projects | Strategic and operational initiatives, intentionally deferred. |
 | Assets | Index of important Google Drive assets and ownership. |
 | Vendors | Vendor relationships, contacts, contracts, and review status. |
 | Brand Standards | Approved brand rules, references, and governance records. |
@@ -67,7 +67,7 @@ Status: Not started
 
 ## Next Recommended Work
 
-1. Review the initial Notion schema with Aly & Pon stakeholders.
-2. Decide whether the five Phase 1 Notion databases should be created manually first.
+1. Review the approved Business Knowledge Base schema with Aly & Pon stakeholders.
+2. Decide whether the three approved Notion databases should be created manually first.
 3. Fill in Google Drive folder owners and naming conventions.
 4. Add decision records for major business architecture choices.

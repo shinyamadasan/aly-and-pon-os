@@ -80,8 +80,8 @@ class FakeClient:
         self.data_sources = {}
         for name in APPROVED_DATABASES:
             data_source = full_data_source(name, BASE_SCHEMA, ids)
-            if not complete and name == "Tasks":
-                data_source["properties"].pop("Area", None)
+            if not complete and name == "Content Library":
+                data_source["properties"].pop("Related Product", None)
             self.containers[name] = {
                 "id": f"container-{name}",
                 "title": [{"plain_text": name}],
@@ -110,7 +110,7 @@ class FakeClient:
             return self.data_sources[path.split("/", 1)[1]]
         if method == "POST" and path.endswith("/query"):
             data_source_id = path.split("/")[1]
-            if data_source_id == "source-Areas":
+            if data_source_id == "source-Product Catalog":
                 return {
                     "results": [
                         {"properties": {**title_property(name), "Status": {"type": "select", "select": {"name": status}}}}
@@ -211,7 +211,7 @@ class BootstrapNotionPhase2Test(unittest.TestCase):
 
         self.assertEqual(result.exit_code, 0)
         output = text(result)
-        self.assertIn("Areas.Active Areas: status=missing", output)
+        self.assertIn("Product Catalog.Catalog: status=missing", output)
         self.assertIn("layout=table", output)
         self.assertIn("filter=None", output)
         self.assertIn("sorts=[]", output)
@@ -233,13 +233,13 @@ class BootstrapNotionPhase2Test(unittest.TestCase):
         self.assertEqual(first_write["path"], "views")
 
     def test_unsupported_view_layout_fails_safely(self):
-        original = DATABASE_VIEWS["Areas"][0]["type"]
-        DATABASE_VIEWS["Areas"][0]["type"] = "calendar"
+        original = DATABASE_VIEWS["Product Catalog"][0]["type"]
+        DATABASE_VIEWS["Product Catalog"][0]["type"] = "calendar"
         try:
             client = FakeClient()
             result = run_bootstrap(VALID_ENV, apply=True, client=client)
         finally:
-            DATABASE_VIEWS["Areas"][0]["type"] = original
+            DATABASE_VIEWS["Product Catalog"][0]["type"] = original
 
         self.assertEqual(result.exit_code, 1)
         self.assertIn("Unsupported view layout", text(result))
@@ -247,9 +247,9 @@ class BootstrapNotionPhase2Test(unittest.TestCase):
 
     def test_same_title_incompatible_view_is_hard_conflict(self):
         client = FakeClient()
-        client.views["Areas"]["Active Areas"] = {
-            "id": "view-Areas-Active Areas",
-            "name": "Active Areas",
+        client.views["Product Catalog"]["Catalog"] = {
+            "id": "view-Product Catalog-Catalog",
+            "name": "Catalog",
             "type": "board",
             "filter": None,
             "sorts": [],
@@ -258,14 +258,14 @@ class BootstrapNotionPhase2Test(unittest.TestCase):
         result = run_bootstrap(VALID_ENV, apply=True, client=client)
 
         self.assertEqual(result.exit_code, 1)
-        self.assertIn("View conflict for Areas.Active Areas", text(result))
+        self.assertIn("View conflict for Product Catalog.Catalog", text(result))
         self.assertEqual(client.write_calls(), [])
 
     def test_retrieved_sorts_null_matches_approved_empty_sorts(self):
         client = FakeClient()
-        client.views["Areas"]["Active Areas"] = {
-            "id": "view-Areas-Active Areas",
-            "name": "Active Areas",
+        client.views["Product Catalog"]["Catalog"] = {
+            "id": "view-Product Catalog-Catalog",
+            "name": "Catalog",
             "type": "table",
             "filter": None,
             "sorts": None,
@@ -274,13 +274,13 @@ class BootstrapNotionPhase2Test(unittest.TestCase):
         result = run_bootstrap(VALID_ENV, inspect=True, client=client)
 
         self.assertEqual(result.exit_code, 0)
-        self.assertIn("Areas.Active Areas: status=matching", text(result))
+        self.assertIn("Product Catalog.Catalog: status=matching", text(result))
 
     def test_omitted_sorts_matches_approved_empty_sorts(self):
         client = FakeClient()
-        client.views["Areas"]["Active Areas"] = {
-            "id": "view-Areas-Active Areas",
-            "name": "Active Areas",
+        client.views["Product Catalog"]["Catalog"] = {
+            "id": "view-Product Catalog-Catalog",
+            "name": "Catalog",
             "type": "table",
             "filter": None,
             "visible_properties": [],
@@ -288,13 +288,13 @@ class BootstrapNotionPhase2Test(unittest.TestCase):
         result = run_bootstrap(VALID_ENV, inspect=True, client=client)
 
         self.assertEqual(result.exit_code, 0)
-        self.assertIn("Areas.Active Areas: status=matching", text(result))
+        self.assertIn("Product Catalog.Catalog: status=matching", text(result))
 
     def test_retrieved_empty_sorts_matches_approved_empty_sorts(self):
         client = FakeClient()
-        client.views["Areas"]["Active Areas"] = {
-            "id": "view-Areas-Active Areas",
-            "name": "Active Areas",
+        client.views["Product Catalog"]["Catalog"] = {
+            "id": "view-Product Catalog-Catalog",
+            "name": "Catalog",
             "type": "table",
             "filter": None,
             "sorts": [],
@@ -303,13 +303,13 @@ class BootstrapNotionPhase2Test(unittest.TestCase):
         result = run_bootstrap(VALID_ENV, inspect=True, client=client)
 
         self.assertEqual(result.exit_code, 0)
-        self.assertIn("Areas.Active Areas: status=matching", text(result))
+        self.assertIn("Product Catalog.Catalog: status=matching", text(result))
 
     def test_non_empty_retrieved_sorts_conflicts_with_no_sorts(self):
         client = FakeClient()
-        client.views["Areas"]["Active Areas"] = {
-            "id": "view-Areas-Active Areas",
-            "name": "Active Areas",
+        client.views["Product Catalog"]["Catalog"] = {
+            "id": "view-Product Catalog-Catalog",
+            "name": "Catalog",
             "type": "table",
             "filter": None,
             "sorts": [{"property": "Name", "direction": "ascending"}],
@@ -318,14 +318,14 @@ class BootstrapNotionPhase2Test(unittest.TestCase):
         result = run_bootstrap(VALID_ENV, apply=True, client=client)
 
         self.assertEqual(result.exit_code, 1)
-        self.assertIn("View conflict for Areas.Active Areas", text(result))
+        self.assertIn("View conflict for Product Catalog.Catalog", text(result))
         self.assertEqual(client.write_calls(), [])
 
     def test_retrieved_filter_null_matches_omitted_approved_filter(self):
         client = FakeClient()
-        client.views["Tasks"]["Open Tasks"] = {
-            "id": "view-Tasks-Open Tasks",
-            "name": "Open Tasks",
+        client.views["Content Library"]["Content Pipeline"] = {
+            "id": "view-Content Library-Content Pipeline",
+            "name": "Content Pipeline",
             "type": "table",
             "filter": None,
             "sorts": None,
@@ -333,12 +333,12 @@ class BootstrapNotionPhase2Test(unittest.TestCase):
         result = run_bootstrap(VALID_ENV, inspect=True, client=client)
 
         self.assertEqual(result.exit_code, 0)
-        self.assertIn("Tasks.Open Tasks: status=matching", text(result))
+        self.assertIn("Content Library.Content Pipeline: status=matching", text(result))
 
     def test_omitted_visible_properties_matches_empty_list(self):
         client = FakeClient()
-        client.views["Decisions"]["Decision Log"] = {
-            "id": "view-Decisions-Decision Log",
+        client.views["Decision Log"]["Decision Log"] = {
+            "id": "view-Decision Log-Decision Log",
             "name": "Decision Log",
             "type": "table",
             "filter": None,
@@ -347,13 +347,13 @@ class BootstrapNotionPhase2Test(unittest.TestCase):
         result = run_bootstrap(VALID_ENV, inspect=True, client=client)
 
         self.assertEqual(result.exit_code, 0)
-        self.assertIn("Decisions.Decision Log: status=matching", text(result))
+        self.assertIn("Decision Log.Decision Log: status=matching", text(result))
 
     def test_non_empty_visible_properties_remain_conflict(self):
         client = FakeClient()
-        client.views["Meetings"]["Meeting Log"] = {
-            "id": "view-Meetings-Meeting Log",
-            "name": "Meeting Log",
+        client.views["Content Library"]["Content Pipeline"] = {
+            "id": "view-Content Library-Content Pipeline",
+            "name": "Content Pipeline",
             "type": "table",
             "filter": None,
             "sorts": None,
@@ -362,7 +362,7 @@ class BootstrapNotionPhase2Test(unittest.TestCase):
         result = run_bootstrap(VALID_ENV, apply=True, client=client)
 
         self.assertEqual(result.exit_code, 1)
-        self.assertIn("View conflict for Meetings.Meeting Log", text(result))
+        self.assertIn("View conflict for Content Library.Content Pipeline", text(result))
         self.assertEqual(client.write_calls(), [])
 
     def test_all_five_live_style_views_classify_as_matching(self):
@@ -384,13 +384,11 @@ class BootstrapNotionPhase2Test(unittest.TestCase):
 
     def test_all_conflicts_are_detected_before_writes(self):
         client = FakeClient()
-        client.views["Areas"]["Active Areas"] = {"id": "view-a", "name": "Active Areas", "type": "board"}
-        client.area_pages["Brand"] = "Paused"
+        client.views["Product Catalog"]["Catalog"] = {"id": "view-a", "name": "Catalog", "type": "board"}
         result = run_bootstrap(VALID_ENV, apply=True, client=client)
 
         self.assertEqual(result.exit_code, 1)
-        self.assertIn("View conflict for Areas.Active Areas", text(result))
-        self.assertIn("Starter Area conflict for Brand", text(result))
+        self.assertIn("View conflict for Product Catalog.Catalog", text(result))
         self.assertEqual(client.write_calls(), [])
 
     def test_failed_first_view_operation_creates_no_other_content(self):
@@ -408,7 +406,7 @@ class BootstrapNotionPhase2Test(unittest.TestCase):
         result = run_bootstrap(VALID_ENV, apply=True, client=client)
 
         self.assertEqual(result.exit_code, 1)
-        self.assertEqual(result.views_created, ["Areas.Active Areas"])
+        self.assertEqual(result.views_created, ["Product Catalog.Catalog"])
         self.assertEqual(result.dashboard_pages_created, [])
 
     def test_second_apply_creates_nothing_new(self):
@@ -421,7 +419,7 @@ class BootstrapNotionPhase2Test(unittest.TestCase):
         self.assertEqual(first.exit_code, 0)
         self.assertEqual(second.exit_code, 0)
         self.assertEqual(second_writes, [])
-        self.assertIn("Phase 2 bootstrap", second.unchanged)
+        self.assertIn("Business Knowledge Base bootstrap", second.unchanged)
 
     def test_does_not_create_disallowed_records(self):
         client = FakeClient()
@@ -431,21 +429,17 @@ class BootstrapNotionPhase2Test(unittest.TestCase):
             call for call in client.write_calls()
             if call["path"] == "pages" and call["body"]["parent"]["type"] == "data_source_id"
         ]
-        self.assertTrue(data_source_page_writes)
-        self.assertTrue(all(call["body"]["parent"]["data_source_id"] == "source-Areas" for call in data_source_page_writes))
+        self.assertEqual(data_source_page_writes, [])
 
     def test_existing_user_content_is_not_modified(self):
         client = FakeClient()
-        client.area_pages["Brand"] = "Active"
-        client.child_pages[client.parent_page_id]["Aly & Pon OS Home"] = "user-page-home"
+        client.child_pages[client.parent_page_id]["Home"] = "user-page-home"
 
         result = run_bootstrap(VALID_ENV, apply=True, client=client)
 
         self.assertEqual(result.exit_code, 0)
-        self.assertNotIn("Brand", result.starter_areas_created)
-        self.assertNotIn("Aly & Pon OS Home", result.dashboard_pages_created)
-        self.assertEqual(client.area_pages["Brand"], "Active")
-        self.assertEqual(client.child_pages[client.parent_page_id]["Aly & Pon OS Home"], "user-page-home")
+        self.assertNotIn("Home", result.dashboard_pages_created)
+        self.assertEqual(client.child_pages[client.parent_page_id]["Home"], "user-page-home")
 
     def test_incomplete_phase1_stops_before_writes(self):
         client = FakeClient(complete=False)
@@ -453,7 +447,7 @@ class BootstrapNotionPhase2Test(unittest.TestCase):
 
         self.assertEqual(result.exit_code, 1)
         self.assertEqual(client.write_calls(), [])
-        self.assertIn("Phase 1 databases are incomplete", text(result))
+        self.assertIn("Business Knowledge Base databases are incomplete", text(result))
 
     def test_matching_items_are_skipped(self):
         client = FakeClient()
@@ -461,8 +455,7 @@ class BootstrapNotionPhase2Test(unittest.TestCase):
         second = run_bootstrap(VALID_ENV, inspect=True, client=client)
 
         self.assertEqual(second.exit_code, 0)
-        self.assertIn("dashboard pages matching: Aly & Pon OS Home", text(second))
-        self.assertIn("starter Areas matching: Brand", text(second))
+        self.assertIn("dashboard pages matching: Home", text(second))
 
     def test_token_remains_redacted(self):
         result = run_bootstrap(VALID_ENV)
@@ -470,13 +463,12 @@ class BootstrapNotionPhase2Test(unittest.TestCase):
         self.assertIn("<redacted>", text(result))
         self.assertNotIn(VALID_ENV["NOTION_TOKEN"], text(result))
 
-    def test_no_products_recipes_vendors_inventory_records_are_planned(self):
+    def test_no_operational_records_are_planned(self):
         result = run_bootstrap(VALID_ENV)
 
-        self.assertIn("starter Areas", text(result))
         self.assertNotIn("Recipes", text(result))
         self.assertNotIn("Inventory", text(result))
-        self.assertNotIn("Vendors", text(result))
+        self.assertNotIn("Tasks", text(result))
 
 
 if __name__ == "__main__":

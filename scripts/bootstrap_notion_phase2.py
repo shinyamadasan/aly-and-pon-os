@@ -1,4 +1,4 @@
-"""Bootstrap Phase 2 workspace defaults for Aly & Pon OS."""
+"""Bootstrap Business Knowledge Base workspace defaults for Aly & Pon."""
 
 from __future__ import annotations
 
@@ -35,34 +35,22 @@ except ModuleNotFoundError:
     )
 
 
-STARTER_AREAS = [
-    "Brand",
-    "Marketing",
-    "Operations",
-    "Products",
-    "Finance",
-    "Customer Experience",
-    "Technology",
-    "Suppliers",
-]
+STARTER_AREAS = []
 DASHBOARD_PAGES = [
-    "Aly & Pon OS Home",
-    "Aly & Pon Operating Dashboard",
-    "Aly & Pon Template Library",
+    "Home",
+    "Brand",
+    "Aly & Pon Operating Principles",
 ]
 TEMPLATE_PAGES = [
-    "Area Template",
-    "Task Template",
-    "Decision Template",
-    "Meeting Template",
-    "Approval Template",
+    "Brand Bible",
+    "Inspiration",
+    "Visual Identity",
+    "Packaging",
 ]
 DATABASE_VIEWS = {
-    "Areas": [{"name": "Active Areas", "type": "table", "filter": None, "sorts": [], "visible_properties": []}],
-    "Tasks": [{"name": "Open Tasks", "type": "table", "filter": None, "sorts": [], "visible_properties": []}],
-    "Decisions": [{"name": "Decision Log", "type": "table", "filter": None, "sorts": [], "visible_properties": []}],
-    "Meetings": [{"name": "Meeting Log", "type": "table", "filter": None, "sorts": [], "visible_properties": []}],
-    "Approvals": [{"name": "Approval Queue", "type": "table", "filter": None, "sorts": [], "visible_properties": []}],
+    "Product Catalog": [{"name": "Catalog", "type": "table", "filter": None, "sorts": [], "visible_properties": []}],
+    "Content Library": [{"name": "Content Pipeline", "type": "table", "filter": None, "sorts": [], "visible_properties": []}],
+    "Decision Log": [{"name": "Decision Log", "type": "table", "filter": None, "sorts": [], "visible_properties": []}],
 }
 SUPPORTED_VIEW_TYPES = {"table"}
 TEMPLATE_MARKER = "Aly & Pon structural template reference."
@@ -302,24 +290,18 @@ def validate_phase1_complete(plan: Any) -> list[str]:
     errors: list[str] = []
     missing = [name for name in APPROVED_DATABASES if name not in plan.existing]
     if missing:
-        errors.append("Missing Phase 1 databases: " + ", ".join(missing))
+        errors.append("Missing Business Knowledge Base databases: " + ", ".join(missing))
     if plan.conflicts:
-        errors.append("Phase 1 schema conflicts must be resolved before Phase 2 bootstrap.")
+        errors.append("Business Knowledge Base schema conflicts must be resolved before bootstrap.")
     if plan.incomplete:
-        errors.append("Phase 1 databases are incomplete: " + ", ".join(plan.incomplete))
+        errors.append("Business Knowledge Base databases are incomplete: " + ", ".join(plan.incomplete))
     return errors
 
 
 def validate_view_configs() -> list[str]:
     errors: list[str] = []
     allowed_keys = {"name", "type", "filter", "sorts", "visible_properties"}
-    approved = {
-        "Areas": {"Active Areas"},
-        "Tasks": {"Open Tasks"},
-        "Decisions": {"Decision Log"},
-        "Meetings": {"Meeting Log"},
-        "Approvals": {"Approval Queue"},
-    }
+    approved = {database: {view["name"] for view in views} for database, views in DATABASE_VIEWS.items()}
     for database, views in DATABASE_VIEWS.items():
         names = {view.get("name") for view in views}
         if names != approved[database]:
@@ -382,7 +364,7 @@ def build_bootstrap_plan(client: NotionClient, parent_page_id: str, phase1_plan:
             plan.missing_dashboards.append(title)
         else:
             plan.matching_dashboards.append(title)
-    plan.existing_template_library_id = child_pages.get("Aly & Pon Template Library")
+    plan.existing_template_library_id = child_pages.get("Brand")
 
     if plan.existing_template_library_id:
         template_pages = list_child_pages(client, plan.existing_template_library_id)
@@ -424,20 +406,11 @@ def build_bootstrap_plan(client: NotionClient, parent_page_id: str, phase1_plan:
         if matching:
             plan.matching_views[database_name] = matching
 
-    area_pages = query_data_source_pages_by_title(client, phase1_plan.existing["Areas"].data_source_id)
-    for name in STARTER_AREAS:
-        if name not in area_pages:
-            plan.missing_starter_areas.append(name)
-            continue
-        if area_status(area_pages[name]) == "Active":
-            plan.matching_starter_areas.append(name)
-        else:
-            plan.conflicts.append(f"Starter Area conflict for {name}: expected Status=Active")
     return plan
 
 
 def append_plan_messages(result: BootstrapResult, plan: BootstrapPlan, *, inspect: bool) -> None:
-    result.messages.append("Phase 1 databases:")
+    result.messages.append("Business Knowledge Base databases:")
     for name in APPROVED_DATABASES:
         result.messages.append(f"- {name}: {plan.phase1_status.get(name, 'not complete')}")
     result.messages.append("dashboard pages missing: " + (", ".join(plan.missing_dashboards) if plan.missing_dashboards else "none"))
@@ -469,15 +442,13 @@ def append_plan_messages(result: BootstrapResult, plan: BootstrapPlan, *, inspec
         result.messages.append("conflicts:")
         result.messages.extend(plan.conflicts)
     result.messages.extend([
-        "new Tasks planned: 0",
-        "new Decisions planned: 0",
-        "new Meetings planned: 0",
-        "new Approvals planned: 0",
-        "product records planned: 0",
+        "operational task records planned: 0",
+        "meeting records planned: 0",
+        "approval records planned: 0",
         "recipe records planned: 0",
         "vendor records planned: 0",
         "inventory records planned: 0",
-        "marketing-content records planned: 0",
+        "production records planned: 0",
         "user-created content modifications planned: 0",
     ])
     if inspect:
@@ -510,13 +481,13 @@ def apply_bootstrap_plan(
     for title in plan.missing_dashboards:
         created = create_child_page(client, parent_page_id, title, dashboard_blocks(title))
         result.dashboard_pages_created.append(title)
-        if title == "Aly & Pon Template Library":
+        if title == "Brand":
             template_library_id = created["id"]
 
     if not template_library_id and plan.missing_template_pages:
         result.exit_code = 1
-        result.failed.append("Aly & Pon Template Library")
-        result.messages.append("Could not create template pages because the Template Library page ID is unavailable.")
+        result.failed.append("Brand")
+        result.messages.append("Could not create Brand pages because the Brand page ID is unavailable.")
         result.messages.extend(summary_messages(result))
         return result
 
@@ -524,13 +495,8 @@ def apply_bootstrap_plan(
         create_child_page(client, template_library_id, title, template_blocks(title))
         result.template_pages_created.append(title)
 
-    areas_data_source_id = phase1_plan.existing["Areas"].data_source_id
-    for area_name in plan.missing_starter_areas:
-        create_area_page(client, areas_data_source_id, area_name)
-        result.starter_areas_created.append(area_name)
-
     if not any([result.dashboard_pages_created, result.template_pages_created, result.views_created, result.starter_areas_created]):
-        result.unchanged.append("Phase 2 bootstrap")
+        result.unchanged.append("Business Knowledge Base bootstrap")
     result.messages.extend(summary_messages(result))
     return result
 
@@ -572,7 +538,7 @@ def run_bootstrap(
     result.messages.append("Required environment variables are present.")
     result.messages.append("NOTION_PARENT_PAGE_ID format is valid.")
     result.messages.append("NOTION_TOKEN: <redacted>")
-    result.messages.append("Phase 2 bootstrap plan:")
+    result.messages.append("Business Knowledge Base bootstrap plan:")
     result.messages.append("dashboard pages: " + ", ".join(DASHBOARD_PAGES))
     result.messages.append("database views: " + ", ".join(f"{db}.{view['name']}" for db, views in DATABASE_VIEWS.items() for view in views))
     result.messages.append("template reference pages: " + ", ".join(TEMPLATE_PAGES))
@@ -580,8 +546,8 @@ def run_bootstrap(
 
     if not inspect and not apply:
         result.messages.append("Dry-run mode: no live Notion reads or writes will be performed.")
-        result.messages.append("Inspect mode would read live Phase 1 state and report missing bootstrap items.")
-        result.messages.append("Apply mode would create only missing dashboard pages, views, template reference pages, and starter Areas.")
+        result.messages.append("Inspect mode would read live Business Knowledge Base state and report missing bootstrap items.")
+        result.messages.append("Apply mode would create only missing Home, Brand, Brand child pages, and database views.")
         return result
 
     notion = client if client is not None else load_notion_client(token)
@@ -603,15 +569,15 @@ def run_bootstrap(
     except Exception as exc:
         result.exit_code = 1
         result.failed.append("Notion API")
-        result.messages.append(api_error_message(exc, "Phase 2 workspace bootstrap"))
+        result.messages.append(api_error_message(exc, "Business Knowledge Base workspace bootstrap"))
         result.messages.extend(summary_messages(result))
         return result
 
 
 def build_parser() -> argparse.ArgumentParser:
-    parser = argparse.ArgumentParser(description="Bootstrap Aly & Pon Phase 2 Notion workspace defaults.")
+    parser = argparse.ArgumentParser(description="Bootstrap Aly & Pon Business Knowledge Base workspace defaults.")
     parser.add_argument("--inspect", action="store_true", help="Read live Notion state and plan bootstrap without writes.")
-    parser.add_argument("--apply", action="store_true", help="Create missing approved Phase 2 bootstrap items.")
+    parser.add_argument("--apply", action="store_true", help="Create missing approved Business Knowledge Base bootstrap items.")
     return parser
 
 

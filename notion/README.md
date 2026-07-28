@@ -1,16 +1,16 @@
 # Notion
 
-This folder defines the planned Notion architecture for Aly & Pon.
+This folder defines the approved Notion Business Knowledge Base architecture for Aly & Pon.
 
-No Notion API code exists here yet. Do not connect to or modify Notion from this repository until the schema, permissions, seed data, and sync rules are approved by humans.
+Do not connect to or modify Notion from this repository unless a command is explicitly run in `--apply` mode after human approval.
 
 ## Contents
 
 | Path | Purpose |
 | --- | --- |
-| `workspace-schema.json` | Draft schema for the future Notion workspace. |
+| `workspace-schema.json` | Approved schema for the Aly & Pon Business Knowledge Base v1. |
 | `seed-data/` | Placeholder for future approved seed records. |
 
 ## Current Status
 
-Planning only. Notion has not been touched.
+The Business Knowledge Base schema is approved. Notion has not been touched by this implementation.
