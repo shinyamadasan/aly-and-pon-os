@@ -88,6 +88,26 @@ python scripts/build_notion_phase1.py --apply
 
 The Phase 1 builder reads `notion/workspace-schema.json` and may create only the approved `Areas`, `Tasks`, `Decisions`, `Meetings`, and `Approvals` databases when `--apply` is explicitly provided. Offline dry-run performs no Notion reads or writes. Inspect mode performs read-only planning. Apply mode inspects all five databases before writing, stops on hard schema conflicts, and can safely resume a partial build by adding only missing approved one-way relation properties.
 
+Phase 2 workspace dry-run:
+
+```powershell
+python scripts/bootstrap_notion_phase2.py
+```
+
+Phase 2 workspace inspect:
+
+```powershell
+python scripts/bootstrap_notion_phase2.py --inspect
+```
+
+Phase 2 workspace apply:
+
+```powershell
+python scripts/bootstrap_notion_phase2.py --apply
+```
+
+The Phase 2 bootstrap command transforms complete Phase 1 databases into a usable operating system shell. It may create only approved dashboard pages, database views, structural template reference pages, and starter Area records. Inspect reports Phase 1 completion, each approved view target, layout, filters, sorts, visible property configuration, and the apply endpoint. Apply performs full preflight before writing and creates database views before lower-risk bootstrap pages or starter Areas. It does not create Tasks, Meetings, Decisions, Approvals, products, recipes, vendors, inventory, marketing content, or business facts.
+
 ## Out of Scope
 
 - Product application code.

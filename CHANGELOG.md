@@ -21,6 +21,8 @@ The format follows a simple date-based log. This repository is currently pre-rel
 - Added a dry-run-first Phase 1 Notion database builder for Areas, Tasks, Decisions, Meetings, and Approvals.
 - Added mocked tests for Phase 1 builder schema validation, idempotency, conflicts, creation, and relation safety.
 - Added read-only `--inspect` mode for Phase 1 Notion planning.
+- Added a guarded Phase 2 workspace bootstrap command for dashboard pages, views, template reference pages, and starter Areas.
+- Added mocked tests for Phase 2 dry-run, inspect, idempotency, allowed writes, and user-content preservation.
 
 ### Changed
 
@@ -35,3 +37,7 @@ The format follows a simple date-based log. This repository is currently pre-rel
 - Updated the Phase 1 builder for Notion API `2025-09-03` data source behavior.
 - Improved Phase 1 builder summaries and sanitized Notion API error reporting.
 - Corrected Phase 1 relation repair payloads to use one-way `single_property` relations targeting data source IDs.
+- Documented Phase 2 bootstrap commands and Notion API template limitations.
+- Improved Phase 2 inspect/preflight reporting for Phase 1 status, exact view definitions, conflicts, redacted IDs, and zero out-of-scope records.
+- Updated Phase 2 apply ordering so view operations run before dashboard pages, template pages, and starter Areas.
+- Normalized Phase 2 view comparison so omitted, `null`, and empty optional view fields do not create false conflicts.
