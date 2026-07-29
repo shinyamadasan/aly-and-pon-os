@@ -94,3 +94,7 @@ Good pattern:
 
 - Selected Logo Concept B because it communicates warmth while remaining simple.
 
+## Principle 8 - Improve From Use, Not Elaboration
+
+Every improvement to the Business Knowledge Base must be justified by actual usage or a clear business need, not by the desire to make the workspace more elaborate.
+

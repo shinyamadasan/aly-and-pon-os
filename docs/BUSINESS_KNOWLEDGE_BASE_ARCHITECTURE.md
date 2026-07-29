@@ -120,7 +120,7 @@ Add new databases only when recurring work demonstrates a real need for database
 ## Release Milestone
 
 Milestone: Business Knowledge Base v1.0  
-Status: Implemented
+Status: Released
 
 Completed:
 
@@ -131,9 +131,14 @@ Completed:
 - Tests.
 - Operating principles.
 - Knowledge-over-operations architecture.
-
-Pending:
-
-- Create implementation PR.
-- Merge to main.
+- Premium workspace experience.
+- Founder dashboard.
+- Canonical Brand Bible.
+- Creative hub.
+- Product Catalog seeded.
+- Content Library seeded.
+- Decision Log seeded.
+- Operating Principles published.
+- Architecture preserved.
+- Product Lab separation maintained.
 

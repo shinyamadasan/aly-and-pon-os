@@ -36,6 +36,7 @@ The format follows a simple date-based log. This repository is currently pre-rel
 - Created live Notion pages for Home, Brand, Brand Bible, Inspiration, Visual Identity, Packaging, and Aly & Pon Operating Principles.
 - Created live Notion databases for Product Catalog, Content Library, and Decision Log.
 - Added approved live Notion database relations and views.
+- Released the premium workspace experience with founder dashboard, canonical Brand Bible, creative hub, seeded Product Catalog, seeded Content Library, seeded Decision Log, published Operating Principles, preserved architecture, and maintained Product Lab separation.
 - Saved generated Notion object IDs to ignored local deployment state in `.notion-state.json`.
 - Verified the database and shell bootstrap commands are idempotent on a second live run.
 
@@ -43,6 +44,7 @@ The format follows a simple date-based log. This repository is currently pre-rel
 
 - Replaced the operations-heavy Notion workspace schema with the approved Product Catalog, Content Library, and Decision Log model.
 - Updated Notion and operating model documentation to enforce the principle that Notion stores business knowledge, not operations.
+- Added the Operating Principle that Business Knowledge Base improvements must be justified by actual usage or a clear business need, not elaboration.
 - Expanded `README.md` from a short description into a repository guide.
 - Narrowed the Phase 1 Notion schema to Areas, Tasks, Decisions, Meetings, and Approvals.
 - Moved SOPs, Projects, Assets, Vendors, and Brand Standards into future-module planning.
